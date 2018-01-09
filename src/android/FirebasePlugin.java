@@ -286,6 +286,9 @@ public class FirebasePlugin extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 try {
+                    // temp fix
+					createChannel();
+                    
                     String token = FirebaseInstanceId.getInstance().getToken();
                     callbackContext.success(token);
                 } catch (Exception e) {
@@ -792,4 +795,17 @@ public class FirebasePlugin extends CordovaPlugin {
             }
         });
     }
+    
+    // Android O Default notification channel temp fix
+	private void createChannel() {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+			final android.app.NotificationManager notificationManager = (android.app.NotificationManager) cordova.getActivity()
+			  .getSystemService(Context.NOTIFICATION_SERVICE);
+
+			String packageName = this.cordova.getActivity().getApplicationContext().getPackageName();
+			android.app.NotificationChannel mChannel = new android.app.NotificationChannel("channel01", "channel01", android.app.NotificationManager.IMPORTANCE_HIGH);
+			  
+			notificationManager.createNotificationChannel(mChannel);
+		}
+	}
 }
